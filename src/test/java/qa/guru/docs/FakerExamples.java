@@ -6,7 +6,7 @@ import java.util.Locale;
 
 public class FakerExamples {
     public static void main(String[] args) {
-        Faker faker = new Faker();
+        Faker faker = new Faker(new Locale("ru"));
 
         System.out.println(faker.aquaTeenHungerForce().character());
         System.out.println(faker.backToTheFuture().quote());
