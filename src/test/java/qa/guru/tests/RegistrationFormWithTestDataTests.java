@@ -1,15 +1,20 @@
 package qa.guru.tests;
 
-import org.junit.jupiter.api.BeforeAll;
-
 import com.codeborne.selenide.Configuration;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.*;
+import static java.lang.String.format;
 
-public class RegistrationFormTests {
+public class RegistrationFormWithTestDataTests {
+
+    String firstName = "Rustam",
+            lastName = "Tyapaev",
+            email = "test@test.com";
+    String expectedFullName = format("%s %s", firstName, lastName);
 
     @BeforeAll
     public static void setUp() {
@@ -23,10 +28,10 @@ public class RegistrationFormTests {
         $(".practice-form-wrapper").shouldHave(text("Student Registration Form"));
         executeJavaScript("$('footer').remove()");
         executeJavaScript("$('#fixedban').remove()");
-        
-        $("#firstName").setValue("Rustam");
-        $("#lastName").setValue("Tyapaev");
-        $("#userEmail").setValue("test@test.com");
+
+        $("#firstName").setValue(firstName);
+        $("#lastName").setValue(lastName);
+        $("#userEmail").setValue(email);
         $("#genterWrapper").$(byText("Other")).click();
         $("#userNumber").setValue("1234567890");
         $("#dateOfBirthInput").click();
@@ -44,8 +49,9 @@ public class RegistrationFormTests {
         $("#submit").click();
 
         $("#example-modal-sizes-title-lg").shouldHave(text("Thanks for submitting the form"));
-        $(".table-responsive").shouldHave(text("Rustam Tyapaev"), text("test@test.com"), text("Other"));
-        $(byText("Student Name")).parent().shouldHave(text("Rustam Tyapaev"));
+        $(".table-responsive").shouldHave(text(firstName + " " + lastName), text(email), text("Other"));
+        $(byText("Student Name")).parent().shouldHave(text(expectedFullName));
         $("#closeLargeModal").click();
+
     }
 }

@@ -1,15 +1,25 @@
 package qa.guru.tests;
 
-import org.junit.jupiter.api.BeforeAll;
-
 import com.codeborne.selenide.Configuration;
+import com.github.javafaker.Faker;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.*;
+import static java.lang.String.format;
+import static qa.guru.utils.RandomUtils.getRandomEmail;
+import static qa.guru.utils.RandomUtils.getRandomString;
 
-public class RegistrationFormTests {
+public class RegistrationFormWithFakerTests {
+    Faker faker = new Faker();
+
+    String firstName = faker.name().firstName(),
+            lastName = faker.name().lastName(),
+            email = faker.internet().emailAddress(),
+            currentAddress = faker.yoda().quote();
+    String expectedFullName = format("%s %s", firstName, lastName);
 
     @BeforeAll
     public static void setUp() {
@@ -23,10 +33,10 @@ public class RegistrationFormTests {
         $(".practice-form-wrapper").shouldHave(text("Student Registration Form"));
         executeJavaScript("$('footer').remove()");
         executeJavaScript("$('#fixedban').remove()");
-        
-        $("#firstName").setValue("Rustam");
-        $("#lastName").setValue("Tyapaev");
-        $("#userEmail").setValue("test@test.com");
+
+        $("#firstName").setValue(firstName);
+        $("#lastName").setValue(lastName);
+        $("#userEmail").setValue(email);
         $("#genterWrapper").$(byText("Other")).click();
         $("#userNumber").setValue("1234567890");
         $("#dateOfBirthInput").click();
@@ -36,7 +46,7 @@ public class RegistrationFormTests {
         $("#subjectsInput").setValue("Maths").pressEnter();
         $("#hobbiesWrapper").$(byText("Sports")).click();
         $("#uploadPicture").uploadFromClasspath("pictures/1.png");
-        $("#currentAddress").setValue("Some address");
+        $("#currentAddress").setValue(currentAddress);
         $("#state").click();
         $("#stateCity-wrapper").$(byText("NCR")).click();
         $("#city").click();
@@ -44,8 +54,9 @@ public class RegistrationFormTests {
         $("#submit").click();
 
         $("#example-modal-sizes-title-lg").shouldHave(text("Thanks for submitting the form"));
-        $(".table-responsive").shouldHave(text("Rustam Tyapaev"), text("test@test.com"), text("Other"));
-        $(byText("Student Name")).parent().shouldHave(text("Rustam Tyapaev"));
+        $(".table-responsive").shouldHave(text(firstName + " " + lastName), text(email), text("Other"));
+        $(byText("Student Name")).parent().shouldHave(text(expectedFullName));
         $("#closeLargeModal").click();
+
     }
 }
